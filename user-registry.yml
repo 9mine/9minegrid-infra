@@ -50,11 +50,12 @@ files:
       fork 
 
   createuser:
-    path: /usr/inferno-os/dis/9mine/create_user.sh
+    path: /usr/inferno-os/dis/9mine/user_ns.sh
     data:
       # https://github.com/9mine/inferno-os/blob/129109066c4092c617ce34229ba5ef91cbc19961/appl/grid/reglisten.b#L163
+      USERNAME = $1
       echo $USERNAME^".users.dev.metacoma.io" > /dev/sysname
-      port=30103
+      port = 30103
       grid/reglisten -A -r user $USERNAME 'tcp!*!'^$port { export / & }
 
   newuser:
@@ -103,8 +104,9 @@ files:
               rread ''
             }
           } {
-            username = ${rget_data} 
-            sh /dis/9mine/newuser.sh $username
+            sh -c ${rget data} >$output_file >>[2]$output_file
+            #username = ${rget_data} 
+            #sh /dis/9mine/create_user.sh $username
         	}
       # https://github.com/9mine/inferno-os/blob/129109066c4092c617ce34229ba5ef91cbc19961/appl/grid/reglisten.b#L163
       echo 'user.dev.metacoma.io' > /dev/sysname
