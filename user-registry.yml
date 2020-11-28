@@ -48,12 +48,13 @@ files:
     path: /usr/inferno-os/9mine/newns_config
     data: |
       fork 
-      unbind /mnt/registry
 
+    path: /usr/inferno-os/dis/9mine/user_ns.sh
     data: | 
       # https://github.com/9mine/inferno-os/blob/129109066c4092c617ce34229ba5ef91cbc19961/appl/grid/reglisten.b#L163
       USERNAME = $1
       echo $USERNAME^'.users.dev.metacoma.io' > /dev/sysname
+      cat /dev/sysname
       port = 30103
       grid/reglisten -A -r user $USERNAME 'tcp!*!'^$port { export / & }
 
