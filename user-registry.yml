@@ -24,7 +24,7 @@ service:
 
 nodePortRange:
   from: *registryExternalPort
-  to: 30102
+  to: 30104
   proto: tcp
 
 
@@ -43,42 +43,69 @@ env:
   - name: NINE_MINE_USER_FS_EXTERNAL_PORT
     value: *userFsExternalPort
 
-profile: | 
-  load file2chan
-  load std
-  ndb/cs
-  for host_var in `{ os env } { '{'$host_var'}' }
-  MOUNT_POINT = /mnt/registry
-  test -d $MOUNT_POINT || mkdir -p $MOUNT_POINT
-  mount { ndb/registry } $MOUNT_POINT
-  port = $REGISTRY_INTERNAL_PORT
-  external_port = $REGISTRY_EXTERNAL_PORT
-  echo 'Internal registry port '^$port
-  echo 'External registry port '^$external_port
-  listen -A 'tcp!*!'$port { export $MOUNT_POINT & } &
-  listen -A 'tcp!*!'$external_port { export $MOUNT_POINT & } &
-  
+files: 
+  newns:
+    path: /usr/inferno-os/9mine/newns_config
+    data:
+      fork 
+
+  createuser:
+    path: /usr/inferno-os/dis/9mine/create_user.sh
+    data:
+      # https://github.com/9mine/inferno-os/blob/129109066c4092c617ce34229ba5ef91cbc19961/appl/grid/reglisten.b#L163
+      echo $USERNAME^".users.dev.metacoma.io" > /dev/sysname
+      port=30103
+      grid/reglisten -A -r user $USERNAME 'tcp!*!'^$port { export / & }
+
+  newuser:
+    path: /usr/inferno-os/dis/9mine/newuser.sh
+    data: | 
+      #!/dis/sh.dis
+      load std  
+      USERNAME = $1
+
+      if {~ $#USERNAME 0} {
+        echo 'Wrong usage, empty username' >[1=2]
+        exit 1
+      }
+      echo Preparing namespace for $USERNAME
+      auth/newns -n /9mine/newns_config sh /dis/9mine/create_user.sh $USERNAME &
 
 
-  CMD_CHAN_DIR = /tmp/userfs/
-
-  test -d $CMD_CHAN_DIR || mkdir -p $CMD_CHAN_DIR
-
-  port = $NINE_MINE_USER_FS_EXTERNAL_PORT
-  
-  output_file := /tmp/output_file
-
-  file2chan $CMD_CHAN_DIR^/user {
-        if {~ ${rget offset} 0} {
-          cat $output_file | putrdata
-        } {
-          rread ''
-        }
-      } {
-        sh -c ${rget data} >$output_file >>[2]$output_file
-    	}
-
-
-  # https://github.com/9mine/inferno-os/blob/129109066c4092c617ce34229ba5ef91cbc19961/appl/grid/reglisten.b#L163
-  echo 'user.node1.dev.metacoma.io' > /dev/sysname
-  grid/reglisten -A -r description 'user management' 'tcp!*!'^$port { export $CMD_CHAN_DIR & }
+  profile:  
+    path: /usr/inferno-os/lib/sh/profile
+    data: |
+      load file2chan
+      load std
+      ndb/cs
+      for host_var in `{ os env } { '{'$host_var'}' }
+      MOUNT_POINT = /mnt/registry
+      test -d $MOUNT_POINT || mkdir -p $MOUNT_POINT
+      mount { ndb/registry } $MOUNT_POINT
+      port = $REGISTRY_INTERNAL_PORT
+      external_port = $REGISTRY_EXTERNAL_PORT
+      echo 'Internal registry port '^$port
+      echo 'External registry port '^$external_port
+      listen -A 'tcp!*!'$port { export $MOUNT_POINT & } &
+      listen -A 'tcp!*!'$external_port { export $MOUNT_POINT & } &
+      
+    
+    
+      CMD_CHAN_DIR = /tmp/userfs/
+      test -d $CMD_CHAN_DIR || mkdir -p $CMD_CHAN_DIR
+      output_file := /tmp/output_file
+      port = $NINE_MINE_USER_FS_EXTERNAL_PORT
+    
+      file2chan $CMD_CHAN_DIR^/user {
+            if {~ ${rget offset} 0} {
+              cat $output_file | putrdata
+            } {
+              rread ''
+            }
+          } {
+            username = ${rget_data} 
+            sh /dis/9mine/newuser.sh $username
+        	}
+      # https://github.com/9mine/inferno-os/blob/129109066c4092c617ce34229ba5ef91cbc19961/appl/grid/reglisten.b#L163
+      echo 'user.dev.metacoma.io' > /dev/sysname
+      grid/reglisten -A -r description 'user management' 'tcp!*!'^$port { export $CMD_CHAN_DIR & }
