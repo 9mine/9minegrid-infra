@@ -1,0 +1,54 @@
+replicaCount: 1
+
+image:
+  repository: dievri/inferno-os
+  pullPolicy: Always
+  tag: "focal"
+
+serviceAccount:
+  create: false
+
+securityContext: {}
+
+registryExternalPort: &registryExternalPort 30100
+registryInternalPort: &registryInternalPort 6675
+
+
+service:
+  - type: ClusterIP
+    port: *registryInternalPort
+
+
+nodePortRange:
+  from: *registryExternalPort
+  to: 30101
+  proto: tcp
+
+
+ingress:
+  enabled: false
+
+resources: {}
+autoscaling:
+  enabled: false
+
+env:
+  - name: REGISTRY_INTERNAL_PORT
+    value: *registryInternalPort
+  - name: REGISTRY_EXTERNAL_PORT
+    value: *registryExternalPort
+
+profile: | 
+  load file2chan
+  load std
+  ndb/cs
+  for host_var in `{ os env } { '{'$host_var'}' }
+  MOUNT_POINT = /mnt_registry
+  test -d $MOUNT_POINT || mkdir -p $MOUNT_POINT
+  mount { ndb/registry } $MOUNT_POINT
+  port = $REGISTRY_INTERNAL_PORT
+  external_port = $REGISTRY_EXTERNAL_PORT
+  echo 'Internal registry port '^$port
+  echo 'External registry port '^$port
+  listen -A 'tcp!*!'$port { export $MOUNT_POINT & } &
+  listen -A 'tcp!*!'$external_port { export $MOUNT_POINT & } &
