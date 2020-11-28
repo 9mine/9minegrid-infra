@@ -24,7 +24,7 @@ service:
 
 nodePortRange:
   from: *registryExternalPort
-  to: 30104
+  to: 30200
   proto: tcp
 
 
