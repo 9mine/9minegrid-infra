@@ -13,15 +13,18 @@ securityContext: {}
 registryExternalPort: &registryExternalPort 30100
 registryInternalPort: &registryInternalPort 6675
 
+userFsExternaPort: &userFsExternalPort 30101
 
 service:
   - type: ClusterIP
     port: *registryInternalPort
+  - type: ClusterIP
+    port: *userFsExternalPort
 
 
 nodePortRange:
   from: *registryExternalPort
-  to: 30101
+  to: 30102
   proto: tcp
 
 
@@ -37,18 +40,45 @@ env:
     value: *registryInternalPort
   - name: REGISTRY_EXTERNAL_PORT
     value: *registryExternalPort
+  - name: NINE_MINE_USER_FS_EXTERNAL_PORT
+    value: *userFsExternalPort
 
 profile: | 
   load file2chan
   load std
   ndb/cs
   for host_var in `{ os env } { '{'$host_var'}' }
-  MOUNT_POINT = /mnt_registry
+  MOUNT_POINT = /mnt/registry
   test -d $MOUNT_POINT || mkdir -p $MOUNT_POINT
   mount { ndb/registry } $MOUNT_POINT
   port = $REGISTRY_INTERNAL_PORT
   external_port = $REGISTRY_EXTERNAL_PORT
   echo 'Internal registry port '^$port
-  echo 'External registry port '^$port
+  echo 'External registry port '^$external_port
   listen -A 'tcp!*!'$port { export $MOUNT_POINT & } &
   listen -A 'tcp!*!'$external_port { export $MOUNT_POINT & } &
+  
+
+
+  CMD_CHAN_DIR = /tmp/userfs/
+
+  test -d $CMD_CHAN_DIR || mkdir -p $CMD_CHAN_DIR
+
+  port = $NINE_MINE_USER_FS_EXTERNAL_PORT
+  
+  output_file := /tmp/output_file
+
+  file2chan $CMD_CHAN_DIR^/user {
+        if {~ ${rget offset} 0} {
+          cat $output_file | putrdata
+        } {
+          rread ''
+        }
+      } {
+        sh -c ${rget data} >$output_file >>[2]$output_file
+    	}
+
+
+  # https://github.com/9mine/inferno-os/blob/129109066c4092c617ce34229ba5ef91cbc19961/appl/grid/reglisten.b#L163
+  echo 'user.node1.dev.metacoma.io' > /dev/sysname
+  grid/reglisten -A -r description 'user management' 'tcp!*!'^$port { export $CMD_CHAN_DIR & }
