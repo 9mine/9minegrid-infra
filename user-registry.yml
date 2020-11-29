@@ -62,6 +62,24 @@ files:
         port = `{ echo $highest_used_port + 1 | calc }
       } 
       echo 'tcp!'^`{cat /dev/sysname}'^!'^$port
+
+      CMD_CHAN_DIR = /tmp/userfs/
+      test -d $CMD_CHAN_DIR || mkdir -p $CMD_CHAN_DIR
+      output_file := /tmp/output_file
+      port = $NINE_MINE_USER_FS_EXTERNAL_PORT
+    
+      # add cmdchan
+      file2chan $CMD_CHAN_DIR^/user {
+            if {~ ${rget offset} 0} {
+              cat $output_file | putrdata
+              rm $output_file
+            } {
+              rread ''
+            }
+          } {
+            sh -c ${rget data} >$output_file >>[2]$output_file
+        	}
+
       grid/reglisten -A -r user $USERNAME 'tcp!*!'^$port { export / & } 
 
   newuser:
