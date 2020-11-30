@@ -18,8 +18,8 @@ userFsExternaPort: &userFsExternalPort 30101
 service:
   - type: ClusterIP
     port: *registryInternalPort
-  - type: ClusterIP
-    port: *userFsExternalPort
+#  - type: ClusterIP
+#    port: *userFsExternalPort
 
 
 nodePortRange:
