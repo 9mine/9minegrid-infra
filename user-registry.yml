@@ -48,6 +48,8 @@ files:
     path: /usr/inferno-os/9mine/newns_config
     data: |
       fork 
+      # XXX fixme use $CMD_CHAN_DIR 
+      unmount /tmp/userfs/
 
   userns:
     path: /usr/inferno-os/dis/9mine/user_ns.sh
@@ -63,13 +65,13 @@ files:
       } 
       echo 'tcp!'^`{cat /dev/sysname}'^!'^$port
 
-      CMD_CHAN_DIR = /tmp/userfs/
+      CMD_CHAN_DIR = /tmp/file2chan
       test -d $CMD_CHAN_DIR || mkdir -p $CMD_CHAN_DIR
       output_file := /tmp/output_file
       port = $NINE_MINE_USER_FS_EXTERNAL_PORT
     
       # add cmdchan
-      file2chan $CMD_CHAN_DIR^/user {
+      file2chan $CMD_CHAN_DIR^/cmd {
             if {~ ${rget offset} 0} {
               cat $output_file | putrdata
               rm $output_file
