@@ -18,8 +18,8 @@ userFsExternaPort: &userFsExternalPort 30101
 service:
   - type: ClusterIP
     port: *registryInternalPort
-#  - type: ClusterIP
-#    port: *userFsExternalPort
+  - type: ClusterIP
+    port: *userFsExternalPort
 
 
 nodePortRange:
@@ -56,6 +56,7 @@ files:
     data: | 
       # https://github.com/9mine/inferno-os/blob/129109066c4092c617ce34229ba5ef91cbc19961/appl/grid/reglisten.b#L163
       load std
+      load file2chan
       USERNAME = $1
       echo $USERNAME^'.users.dev.metacoma.io' > /dev/sysname
       highest_used_port = `{netstat | sed -n '/Announced/ {s/.*::!(30[12]..) .*/\1/gp}' | sort -r | sed '1q'}
@@ -68,7 +69,6 @@ files:
       CMD_CHAN_DIR = /tmp/file2chan
       test -d $CMD_CHAN_DIR || mkdir -p $CMD_CHAN_DIR
       output_file := /tmp/output_file
-      port = $NINE_MINE_USER_FS_EXTERNAL_PORT
     
       # add cmdchan
       file2chan $CMD_CHAN_DIR^/cmd {
