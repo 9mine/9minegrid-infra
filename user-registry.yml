@@ -129,9 +129,6 @@ files:
               rread ''
             }
           } {
-            #sh -c ${rget data} >$output_file >>[2]$output_file
-            #sh -x /dis/9mine/newuser.sh test
-            #username = ${rget data} 
             sh -x /dis/9mine/newuser.sh ${rget data} > $output_file >>[2]$output_file
         	}
       # https://github.com/9mine/inferno-os/blob/129109066c4092c617ce34229ba5ef91cbc19961/appl/grid/reglisten.b#L163
