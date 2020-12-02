@@ -79,7 +79,7 @@ files:
               rread ''
             }
           } {
-            sh -c ${rget data} >$output_file >>[2]$output_file
+            sh -n -c ${rget data} >$output_file >>[2]$output_file
         	}
 
       grid/reglisten -A -r user $USERNAME 'tcp!*!'^$port { export / & } 
