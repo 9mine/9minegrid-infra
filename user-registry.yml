@@ -47,9 +47,22 @@ files:
   newns:
     path: /usr/inferno-os/9mine/newns_config
     data: |
-      fork 
-      # XXX fixme use $CMD_CHAN_DIR 
-      unmount /tmp/userfs/
+      new
+      bind / /
+      bind -ac '#U/9mine/$USERNAME' /
+      bind /dev /dev
+      bind -b '#^' /dev
+      bind /chan /chan
+      bind -b '#^' /chan
+      bind -b '#m' /dev
+      bind -b '#c' /dev
+      bind '#p' /prog
+      bind '#d' /fd
+      bind /net /net
+      bind -a '#I' /net
+      bind -c '#e' /env
+      bind -b '#scs' /net
+      mount -A tcp!registry!registry /mnt/registry
 
   userns:
     path: /usr/inferno-os/dis/9mine/user_ns.sh
@@ -96,6 +109,15 @@ files:
         exit 1
       }
       echo Preparing namespace for $USERNAME
+      USERNAME_DIR = /9mine/^$USERNAME
+
+      for dir in fd dev chan prog net env mnt/registry dis lib {
+        DST_DIR = $USERNAME_DIR^/^$dir
+        test -d $DST_DIR || mkdir -p $DST_DIR
+      }
+      cp -r /dis/ $USERNAME_DIR^/dis
+      cp -r /lib/ $USERNAME_DIR^/lib
+    
       auth/newns -n /9mine/newns_config sh -x /dis/9mine/user_ns.sh $USERNAME &
 
 
