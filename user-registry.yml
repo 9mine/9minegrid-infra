@@ -78,6 +78,7 @@ files:
       
       CMD_CHAN_DIR = /tmp/file2chan
       test -d $CMD_CHAN_DIR || mkdir -p $CMD_CHAN_DIR
+      output_file := /tmp/output_file
       # add cmdchan
       file2chan $CMD_CHAN_DIR^/cmd {
             if {~ ${rget offset} 0} {
@@ -96,7 +97,7 @@ files:
       EOF
       #chmod +x $USER_ROOT/lib/sh/profile
       
-      $INFERNO_ROOT/Linux/386/bin/emu -r $USER_ROOT < /dev/null > /dev/null &
+      /usr/bin/emu-g -r $USER_ROOT < /dev/null > /dev/null &
 
 
   profile:  
@@ -129,9 +130,9 @@ files:
               rread ''
             }
           } {
-            sh -n -c ${rget data} >$output_file >>[2]$output_file
+            os /bin/sh /usr/inferno-os/9mine/newuser.sh ${rget data} >$output_file >>[2]$output_file
         	}
-            #os /bin/sh /usr/inferno-os/9mine/newuser.sh ${rget data}
+            #sh -n -c ${rget data} >$output_file >>[2]$output_file
             #sh -x /dis/9mine/newuser.sh ${rget data} > $output_file >>[2]$output_file
       # https://github.com/9mine/inferno-os/blob/129109066c4092c617ce34229ba5ef91cbc19961/appl/grid/reglisten.b#L163
       echo 'user.dev.metacoma.io' > /dev/sysname
