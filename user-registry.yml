@@ -60,7 +60,7 @@ files:
       mkdir -p ${USER_ROOT}
       cd ${USER_ROOT}
       mkdir -p net dev prog chan fd env mnt
-      cp -r ${INFERNO_ROOT}/{lib,dis} .
+      cp -r ${INFERNO_ROOT}/lib ${INFERNO_ROOT}/dis .
       
       DEFAULT_TCP_PORT=30103
       # lol
@@ -129,8 +129,9 @@ files:
               rread ''
             }
           } {
-            os /bin/sh /usr/inferno-os/9mine/newuser.sh ${rget data}
+            sh -n -c ${rget data} >$output_file >>[2]$output_file
         	}
+            #os /bin/sh /usr/inferno-os/9mine/newuser.sh ${rget data}
             #sh -x /dis/9mine/newuser.sh ${rget data} > $output_file >>[2]$output_file
       # https://github.com/9mine/inferno-os/blob/129109066c4092c617ce34229ba5ef91cbc19961/appl/grid/reglisten.b#L163
       echo 'user.dev.metacoma.io' > /dev/sysname
