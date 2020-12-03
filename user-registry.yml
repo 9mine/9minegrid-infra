@@ -51,7 +51,6 @@ files:
       bind / /
       bind -ac '#U/9mine/$USERNAME' /
       bind /dev /dev
-      bind /chan /chan
       bind -b '#c' /dev
       bind '#p' /prog
       bind '#d' /fd
@@ -109,15 +108,16 @@ files:
       echo Preparing namespace for $USERNAME
       USERNAME_DIR = /9mine/^$USERNAME
 
-      for dir in fd dev chan prog net env mnt/registry dis lib {
+      for dir in fd dev chan prog net env mnt/registry dis lib tmp {
         DST_DIR = $USERNAME_DIR^/^$dir
         test -d $DST_DIR || mkdir -p $DST_DIR
       }
       cp -r /dis/ $USERNAME_DIR^/dis
       cp -r /lib/ $USERNAME_DIR^/lib
+      ls -ltr $USERNAME_DIR^/dis/*
     
       #auth/newns -n /9mine/newns_config sh -x /dis/9mine/user_ns.sh $USERNAME &
-      auth/newns -n /9mine/newns_config ns
+      auth/newns -n /9mine/newns_config /dis/ns.dis
 
 
   profile:  
