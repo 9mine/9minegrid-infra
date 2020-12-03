@@ -51,10 +51,7 @@ files:
       bind / /
       bind -ac '#U/9mine/$USERNAME' /
       bind /dev /dev
-      bind -b '#^' /dev
       bind /chan /chan
-      bind -b '#^' /chan
-      bind -b '#m' /dev
       bind -b '#c' /dev
       bind '#p' /prog
       bind '#d' /fd
@@ -62,7 +59,8 @@ files:
       bind -a '#I' /net
       bind -c '#e' /env
       bind -b '#scs' /net
-      mount -A tcp!registry!registry /mnt/registry
+
+#      mount -A tcp!registry!registry /mnt/registry
 
   userns:
     path: /usr/inferno-os/dis/9mine/user_ns.sh
@@ -118,7 +116,8 @@ files:
       cp -r /dis/ $USERNAME_DIR^/dis
       cp -r /lib/ $USERNAME_DIR^/lib
     
-      auth/newns -n /9mine/newns_config sh -x /dis/9mine/user_ns.sh $USERNAME &
+      #auth/newns -n /9mine/newns_config sh -x /dis/9mine/user_ns.sh $USERNAME &
+      auth/newns -n /9mine/newns_config ns
 
 
   profile:  
