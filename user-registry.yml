@@ -45,42 +45,40 @@ env:
 
 files: 
   newns:
-    path: /usr/inferno-os/9mine/newns_config
+    path: /usr/inferno-os/9mine/newuser.sh
     data: |
-      new
-      bind / /
-      bind -ac '#U/9mine/$USERNAME' /
-      bind /dev /dev
-      bind -b '#c' /dev
-      bind '#p' /prog
-      bind '#d' /fd
-      bind /net /net
-      bind -a '#I' /net
-      bind -c '#e' /env
-      bind -b '#scs' /net
-      mount -A tcp!registry.dev.metacoma.io!30100 /mnt/registry
-      #kmount -A tcp!registry!registry /mnt/registry
-
-
-  userns:
-    path: /usr/inferno-os/dis/user_ns.sh
-    data: | 
-      # https://github.com/9mine/inferno-os/blob/129109066c4092c617ce34229ba5ef91cbc19961/appl/grid/reglisten.b#L163
-      load std
+      #!/bin/bash
+      set -ex
+      
+      export USERNAME=$1
+      export USER_ROOT=/9mine/${USERNAME}
+      export USER_DOMAIN=${USERNAME}.users.dev.metacoma.io
+      export INFERNO_ROOT="/usr/inferno-os"
+      #export INFERNO_ROOT="/home/bebebeko/inferno-os"
+      
+      # XXX use tar for that
+      mkdir -p ${USER_ROOT}
+      cd ${USER_ROOT}
+      mkdir -p net dev prog chan fd env mnt
+      cp -r ${INFERNO_ROOT}/lib ${INFERNO_ROOT}/dis .
+      
+      DEFAULT_TCP_PORT=30103
+      # lol
+      TCP_PORT=`netstat -nlp | awk '/:30[12].. / {print $4}' | sort -r | awk -F: '{print $NF+1; exit}'`
+      export PORT=${TCP_PORT:-$DEFAULT_TCP_PORT}
+      
+      cat<<'EOF' > $USER_ROOT/lib/sh/profile
+      ndb/cs
       load file2chan
-      USERNAME = $1
-      echo $USERNAME^'.users.dev.metacoma.io' > /dev/sysname
-      highest_used_port = `{netstat | sed -n '/Announced/ {s/.*::!(30[12]..) .*/\1/gp}' | sort -r | sed '1q'}
-      port = 30103 # default port
-      if {~ $#highest_used_port 1} {
-        port = `{ echo $highest_used_port + 1 | calc }
-      } 
-      echo 'tcp!'^`{cat /dev/sysname}'^!'^$port
-
+      load std
+      mkdir -p /mnt/registry
+      mount -A tcp!registry.dev.metacoma.io!30100 /mnt/registry
+      #for host_var in `{ os env | sed 's/=/=''/;s/$/''/' } { '{'$host_var'}' }
+      for host_var in `{ os env }  { '{'$host_var'}' }
+      
       CMD_CHAN_DIR = /tmp/file2chan
       test -d $CMD_CHAN_DIR || mkdir -p $CMD_CHAN_DIR
       output_file := /tmp/output_file
-    
       # add cmdchan
       file2chan $CMD_CHAN_DIR^/cmd {
             if {~ ${rget offset} 0} {
@@ -91,31 +89,15 @@ files:
             }
           } {
             sh -n -c ${rget data} >$output_file >>[2]$output_file
-        	}
-
-      grid/reglisten -A -r user $USERNAME 'tcp!*!'^$port { export / & } 
-
-  newuser:
-    path: /usr/inferno-os/dis/9mine/newuser.sh
-    data: | 
-      #!/dis/sh.dis
-      load std  
-      USERNAME = $1
-
-      if {~ $#USERNAME 0} {
-        echo 'Wrong usage, empty username' >[1=2]
-        exit 1
-      }
-      echo Preparing namespace for $USERNAME
-      USERNAME_DIR = /9mine/^$USERNAME
-
-      for dir in fd dev chan prog net env mnt/registry tmp {
-        DST_DIR = $USERNAME_DIR^/^$dir
-        test -d $DST_DIR || mkdir -p $DST_DIR
-      }
-      cp -r /dis/ /lib/ $USERNAME_DIR^/  
-      auth/newns -n /9mine/newns_config sh -x /dis/user_ns.sh $USERNAME &
-      #auth/newns -n /9mine/newns_config /dis/ns.dis
+          }
+      
+      echo $USERNAME^'.users.dev.metacoma.io' > /dev/sysname
+      echo ok
+      grid/reglisten -A -r user $USERNAME 'tcp!*!'^$PORT { export / & }
+      EOF
+      #chmod +x $USER_ROOT/lib/sh/profile
+      
+      /usr/bin/emu-g -r $USER_ROOT < /dev/null > /dev/null &
 
 
   profile:  
@@ -148,8 +130,10 @@ files:
               rread ''
             }
           } {
-            sh -x /dis/9mine/newuser.sh ${rget data} > $output_file >>[2]$output_file
+            os /bin/sh /usr/inferno-os/9mine/newuser.sh ${rget data} >$output_file >>[2]$output_file
         	}
+            #sh -n -c ${rget data} >$output_file >>[2]$output_file
+            #sh -x /dis/9mine/newuser.sh ${rget data} > $output_file >>[2]$output_file
       # https://github.com/9mine/inferno-os/blob/129109066c4092c617ce34229ba5ef91cbc19961/appl/grid/reglisten.b#L163
       echo 'user.dev.metacoma.io' > /dev/sysname
       grid/reglisten -A -r description 'user management' 'tcp!*!'^$port { export $CMD_CHAN_DIR & }
