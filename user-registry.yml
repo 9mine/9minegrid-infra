@@ -45,21 +45,58 @@ env:
 
 files: 
   newns:
-    path: /usr/inferno-os/9mine/newns_config
+    path: /usr/inferno-os/9mine/newuser.sh
     data: |
-      new
-      bind / /
-      bind -ac '#U/9mine/$USERNAME' /
-      bind /dev /dev
-      bind -b '#c' /dev
-      bind '#p' /prog
-      bind '#d' /fd
-      bind /net /net
-      bind -a '#I' /net
-      bind -c '#e' /env
-      bind -b '#scs' /net
+      #!/bin/bash
+      set -ex
+      
+      export USERNAME=$1
+      export USER_ROOT=/9mine/${USERNAME}
+      export USER_DOMAIN=${USERNAME}.users.dev.metacoma.io
+      export INFERNO_ROOT="/usr/inferno-os"
+      #export INFERNO_ROOT="/home/bebebeko/inferno-os"
+      
+      # XXX use tar for that
+      mkdir -p ${USER_ROOT}
+      cd ${USER_ROOT}
+      mkdir -p net dev prog chan fd env mnt
+      cp -r ${INFERNO_ROOT}/{lib,dis} .
+      
+      DEFAULT_TCP_PORT=30103
+      # lol
+      TCP_PORT=`netstat -nlp | awk '/:30[12].. / {print $4}' | sort -r | awk -F: '{print $NF+1; exit}'`
+      export PORT=${TCP_PORT:-$DEFAULT_TCP_PORT}
+      
+      cat<<'EOF' > $USER_ROOT/lib/sh/profile
+      ndb/cs
+      load file2chan
+      load std
+      mkdir -p /mnt/registry
       mount -A tcp!registry.dev.metacoma.io!30100 /mnt/registry
-      #kmount -A tcp!registry!registry /mnt/registry
+      #for host_var in `{ os env | sed 's/=/=''/;s/$/''/' } { '{'$host_var'}' }
+      for host_var in `{ os env }  { '{'$host_var'}' }
+      
+      CMD_CHAN_DIR = /tmp/file2chan
+      test -d $CMD_CHAN_DIR || mkdir -p $CMD_CHAN_DIR
+      # add cmdchan
+      file2chan $CMD_CHAN_DIR^/cmd {
+            if {~ ${rget offset} 0} {
+              cat $output_file | putrdata
+              rm $output_file
+            } {
+              rread ''
+            }
+          } {
+            sh -n -c ${rget data} >$output_file >>[2]$output_file
+          }
+      
+      echo $USERNAME^'.users.dev.metacoma.io' > /dev/sysname
+      echo ok
+      grid/reglisten -A -r user $USERNAME 'tcp!*!'^$PORT { export / & }
+      EOF
+      #chmod +x $USER_ROOT/lib/sh/profile
+      
+      $INFERNO_ROOT/Linux/386/bin/emu -r $USER_ROOT < /dev/null > /dev/null &
 
 
   userns:
