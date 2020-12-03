@@ -58,8 +58,9 @@ files:
       bind -a '#I' /net
       bind -c '#e' /env
       bind -b '#scs' /net
+      mount -A tcp!registry.dev.metacoma.io!30100 /mnt/registry
+      #kmount -A tcp!registry!registry /mnt/registry
 
-#      mount -A tcp!registry!registry /mnt/registry
 
   userns:
     path: /usr/inferno-os/dis/user_ns.sh
