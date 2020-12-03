@@ -62,7 +62,7 @@ files:
 #      mount -A tcp!registry!registry /mnt/registry
 
   userns:
-    path: /usr/inferno-os/dis/9mine/user_ns.sh
+    path: /usr/inferno-os/dis/user_ns.sh
     data: | 
       # https://github.com/9mine/inferno-os/blob/129109066c4092c617ce34229ba5ef91cbc19961/appl/grid/reglisten.b#L163
       load std
@@ -108,16 +108,13 @@ files:
       echo Preparing namespace for $USERNAME
       USERNAME_DIR = /9mine/^$USERNAME
 
-      for dir in fd dev chan prog net env mnt/registry dis lib tmp {
+      for dir in fd dev chan prog net env mnt/registry tmp {
         DST_DIR = $USERNAME_DIR^/^$dir
         test -d $DST_DIR || mkdir -p $DST_DIR
       }
-      cp -r /dis/ $USERNAME_DIR^/dis
-      cp -r /lib/ $USERNAME_DIR^/lib
-      ls -ltr $USERNAME_DIR^/dis/*
-    
-      #auth/newns -n /9mine/newns_config sh -x /dis/9mine/user_ns.sh $USERNAME &
-      auth/newns -n /9mine/newns_config /dis/ns.dis
+      cp -r /dis/ /lib/ $USERNAME_DIR^/  
+      auth/newns -n /9mine/newns_config sh -x /dis/user_ns.sh $USERNAME &
+      #auth/newns -n /9mine/newns_config /dis/ns.dis
 
 
   profile:  
