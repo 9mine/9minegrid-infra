@@ -1,0 +1,176 @@
+replicaCount: 1
+
+image:
+  repository: dievri/inferno-os
+  pullPolicy: Always
+  tag: "focal"
+
+serviceAccount:
+  create: false
+
+securityContext: {}
+
+registryExternalPort: &registryExternalPort 30099
+registryInternalPort: &registryInternalPort 6675
+
+service:
+  - type: ClusterIP
+    port: *registryInternalPort
+
+nodePortRange:
+  from: *registryExternalPort
+  to: 30100
+  proto: tcp
+
+
+ingress:
+  enabled: false
+
+resources: {}
+autoscaling:
+  enabled: false
+
+env:
+  - name: REGISTRY_INTERNAL_PORT
+    value: *registryInternalPort
+  - name: REGISTRY_EXTERNAL_PORT
+    value: *registryExternalPort
+
+files: 
+  global_registry:
+    path: /usr/inferno-os/host/global_registry.ndb
+    data: |
+      
+      service=tcp!registry.dev.metacoma.io!30099
+        type=registry
+        contact='9mine'
+        description='Global registry' 
+        icon='https://avatars0.githubusercontent.com/u/5146707?s=460&u=e6f304251aeaf8e719f6f1a41cc536f89aba317f&v=4' 
+
+      service=tcp!registry.dev.metacoma.io!30100
+        type=registry
+        contact='9mine'
+        description='9mine user registry' 
+        icon='https://avatars0.githubusercontent.com/u/5146707?s=460&u=e6f304251aeaf8e719f6f1a41cc536f89aba317f&v=4' 
+
+      service=tcp!registry.9gridchan.org!6675
+        type=registry
+        contact='mycroftiv'
+        description='9gridchan registry' 
+        icon='https://safebytes.com/wp-content/uploads/2017/02/registry-icon.jpg' 
+      
+      service=tcp!registry.9gridchan.org!7675
+        type=registry
+        contact='mycroftiv'
+        description='9gridchan public registry'
+        icon='https://camo.githubusercontent.com/3f0e8eeb989a431168db50524198fddd4b31c25dbc88f8a3d66090bd0b6096b4/68747470733a2f2f7777772e646f636b65722e636f6d2f73697465732f64656661756c742f66696c65732f6f79737465722d72656769737472792d332e706e67'
+        
+      service='tcp!dum.a-b.xyz!905'
+        type=fileserver
+        contact='kvik'
+        description='rfc hell'
+        icon='https://www.file-extension.info/images/resource/formats/rfc.png'
+      
+      service='tcp!docs.a-b.xyz!909'
+        type=fileserver
+        contact='kvik'
+        description='docs'
+        icon='https://image.flaticon.com/icons/png/512/2415/2415130.png'
+      
+      service='tcp!oat.nine.sirjofri.de!564'
+        type=fileserver
+        contact=sirjofri
+        description='sirjofri fileserver'
+        icon='https://pbs.twimg.com/media/DfQ5r3GW0AAwqQj.png:larg' 
+      
+      service='tcp!ftrv.se!564'
+        type=fileserver
+        contact=sigrid
+        description='sigrid fileserver'
+        icon='https://pbs.twimg.com/media/DfQ5r3GW0AAwqQj.png:larg' 
+      
+      service='tcp!9p.io!564'
+        type=fileserver
+        contact=9p.io
+        description=9p.io
+        icon='https://pspodcasting.net/dan/blog/2019/images/bunny_white.png'
+      
+      service='tcp!postnix.pw!564'
+        type=fileserver
+        contact=henesy
+        description=postnix
+        icon='https://avatars2.githubusercontent.com/u/1994498?s=460&u=b518fec9fae7d02f3d12028f1c7ec8aa7bf9cdb9&v=4'
+      
+      service='tcp!postnix.pw!564'
+        type=fileserver
+        contact=henesy
+        description='The Sources mirror'
+        icon='https://avatars2.githubusercontent.com/u/1994498?s=460&u=b518fec9fae7d02f3d12028f1c7ec8aa7bf9cdb9&v=4'
+      
+      
+      service='tcp!postnix.pw!626'
+        type=fileserver
+        contact=henesy
+        description='Audio manuals'
+        icon='https://avatars2.githubusercontent.com/u/1994498?s=460&u=b518fec9fae7d02f3d12028f1c7ec8aa7bf9cdb9&v=4'
+      
+      service='tcp!postnix.pw!626'
+        type=fileserver
+        contact=henesy
+        description='Audio manuals'
+        icon='https://avatars2.githubusercontent.com/u/1994498?s=460&u=b518fec9fae7d02f3d12028f1c7ec8aa7bf9cdb9&v=4'
+      
+      service='tcp!postnix.pw!465'
+        type=fileserver
+        contact=henesy
+        description='The web mirrors of misc (9) projects'
+        icon='https://avatars2.githubusercontent.com/u/1994498?s=460&u=b518fec9fae7d02f3d12028f1c7ec8aa7bf9cdb9&v=4'
+      
+      service='tcp!contrib.9front.org!564'
+        type=fileserver
+        contact=9front
+        description='contrib'
+        icon='http://iwp9.org/glenda.png'
+      
+      service='tcp!9front.org!7734'
+        type=fileserver
+        contact=9front
+        description='contrib'
+        icon='http://iwp9.org/glenda.png'
+      
+      service='tcp!coeus.antares-labs.eu!65009'
+        type=fileserver
+        contact=gridbiblia
+        description='gridbiblia'
+        icon='http://iwp9.org/glenda.png'
+      
+      
+      service='tcp!kamalatta.ddnss.de!999'
+        type=fileserver
+        contact=kamalatta
+        description='guestbook'
+        icon='https://photos.smugmug.com/PAGES/Webitems/i-D574vN4/1/739083c8/L/STOCK_IMAGES-1-L.png'
+      
+      
+      service='tcp!kamalatta.ddnss.de!9997'
+        type=fileserver
+        contact=kamalatta
+        description='chat'
+        icon='https://www.pngfind.com/pngs/m/285-2855578_png-file-svg-icon-chat-png-transparent-png.png'
+
+  profile:  
+    path: /usr/inferno-os/lib/sh/profile
+    data: |
+      load file2chan
+      load std
+      ndb/cs
+      for host_var in `{ os env } { '{'$host_var'}' }
+      MOUNT_POINT = /mnt/registry
+      test -d $MOUNT_POINT || mkdir -p $MOUNT_POINT
+      mount { ndb/registry -f /host/global_registry.ndb } $MOUNT_POINT
+      port = $REGISTRY_INTERNAL_PORT
+      external_port = $REGISTRY_EXTERNAL_PORT
+      echo 'Internal registry port '^$port
+      echo 'External registry port '^$external_port
+      listen -A 'tcp!*!'$port { export $MOUNT_POINT & } &
+      listen -A 'tcp!*!'$external_port { export $MOUNT_POINT & } &

@@ -116,7 +116,7 @@ files:
       echo 'External registry port '^$external_port
       listen -A 'tcp!*!'$port { export $MOUNT_POINT & } &
       listen -A 'tcp!*!'$external_port { export $MOUNT_POINT & } &
-      
+
       CMD_CHAN_DIR = /tmp/userfs/
       test -d $CMD_CHAN_DIR || mkdir -p $CMD_CHAN_DIR
       output_file := /tmp/output_file
