@@ -81,7 +81,7 @@ files:
         type=fileserver
         contact=sirjofri
         description='sirjofri fileserver'
-        icon='https://pbs.twimg.com/media/DfQ5r3GW0AAwqQj.png:larg' 
+        icon='http://oat.nine.sirjofri.de/share.png' 
       
       service='tcp!ftrv.se!564'
         type=fileserver
