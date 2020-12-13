@@ -49,10 +49,20 @@ files:
       load std
       ndb/cs
       for host_var in `{ os env } { '{'$host_var'}' }
-
+  
+      os mkdir -p /usr/inferno-os/host/storage
+      os chmod -R a+rwx /usr/inferno-os/host
       test -d /storage || mkdir /storage
 
       bind -ac '#U/host/storage' /storage
+      chmod a+rwx /storage
+
+      for d in welcomefs registry/logo files {  
+        d = '/storage/9mine/'^$d
+        test -d $d || mkdir -p $d 
+        chmod a+rwx $d
+      }
+
 
 
       test -d /mnt/registry || mkdir -p /mnt/registry
