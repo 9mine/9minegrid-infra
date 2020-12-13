@@ -22,6 +22,11 @@ nodePortRange:
   to: 30099
   proto: tcp
 
+storage:
+  size: 4Gi
+#  class: yc-network-ssd
+  mountPath: /usr/inferno-os/host/storage
+
 
 ingress:
   enabled: false
@@ -44,12 +49,19 @@ files:
       load std
       ndb/cs
       for host_var in `{ os env } { '{'$host_var'}' }
-      MOUNT_POINT = /mnt/registry
-      test -d $MOUNT_POINT || mkdir -p $MOUNT_POINT
-      mount { ndb/registry -f /host/global_registry.ndb } $MOUNT_POINT
-      port = $REGISTRY_INTERNAL_PORT
-      external_port = $REGISTRY_EXTERNAL_PORT
+
+      test -d /storage || mkdir /storage
+
+      bind -ac '#U/host/storage' /storage
+
+
+      test -d /mnt/registry || mkdir -p /mnt/registry
+      mount -A tcp!registry.dev.metacoma.io!30100 /mnt/registry
+
+      port = $INTERNAL_PORT
+      external_port = $EXTERNAL_PORT
       echo 'Internal registry port '^$port
       echo 'External registry port '^$external_port
-      listen -A 'tcp!*!'$port { export $MOUNT_POINT & } &
-      listen -A 'tcp!*!'$external_port { export $MOUNT_POINT & } &
+
+      echo files.dev.metacoma.io > /dev/sysname
+      grid/reglisten -A -r type files 'tcp!*!'^$external_port { export /storage & }
