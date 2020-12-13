@@ -75,6 +75,11 @@ files:
       mount -A tcp!registry.dev.metacoma.io!30100 /mnt/registry
       #for host_var in `{ os env | sed 's/=/=''/;s/$/''/' } { '{'$host_var'}' }
       for host_var in `{ os env }  { '{'$host_var'}' }
+
+      gridfiles = `{ndb/regquery -n type files} 
+      test -d /9mine || mkdir /9mine
+      mount -A $gridfiles /9mine
+
       
       CMD_CHAN_DIR = /tmp/file2chan
       test -d $CMD_CHAN_DIR || mkdir -p $CMD_CHAN_DIR

@@ -42,6 +42,63 @@ env:
     value: *externalPort
 
 files: 
+  newns:
+    path: /usr/inferno-os/9mine/newuser.sh
+    data: |
+      #!/bin/bash
+      set -ex
+      
+      export USERNAME=$1
+      export USER_ROOT=/9mine/${USERNAME}
+      export USER_DOMAIN=${USERNAME}.users.dev.metacoma.io
+      export INFERNO_ROOT="/usr/inferno-os"
+      #export INFERNO_ROOT="/home/bebebeko/inferno-os"
+      
+      # XXX use tar for that
+      mkdir -p ${USER_ROOT}
+      cd ${USER_ROOT}
+      mkdir -p net dev prog chan fd env mnt
+      cp -r ${INFERNO_ROOT}/lib ${INFERNO_ROOT}/dis .
+      
+      DEFAULT_TCP_PORT=30103
+      # lol
+      TCP_PORT=`netstat -nlp | awk '/:30[12].. / {print $4}' | sort -r | awk -F: '{print $NF+1; exit}'`
+      export PORT=${TCP_PORT:-$DEFAULT_TCP_PORT}
+      
+      cat<<'EOF' > $USER_ROOT/lib/sh/profile
+      ndb/cs
+      load file2chan
+      load std
+      mkdir -p /mnt/registry
+      mount -A tcp!registry.dev.metacoma.io!30100 /mnt/registry
+      for host_var in `{ os env }  { '{'$host_var'}' }
+
+      gridfiles = `{ndb/regquery -n type files} 
+      test -n /9mine || mkdir /9mine
+      mount -A $gridfiles /9mine
+      
+      CMD_CHAN_DIR = /tmp/file2chan
+      test -d $CMD_CHAN_DIR || mkdir -p $CMD_CHAN_DIR
+      output_file := /tmp/output_file
+      # add cmdchan
+      file2chan $CMD_CHAN_DIR^/cmd {
+            if {~ ${rget offset} 0} {
+              cat $output_file | putrdata
+              rm $output_file
+            } {
+              rread ''
+            }
+          } {
+            sh -n -c ${rget data} >$output_file >>[2]$output_file
+          }
+      
+      echo $USERNAME^'.users.dev.metacoma.io' > /dev/sysname
+      echo ok
+      grid/reglisten -A -r user $USERNAME 'tcp!*!'^$PORT { export / & }
+      EOF
+      #chmod +x $USER_ROOT/lib/sh/profile
+      
+      /usr/bin/emu-g -r $USER_ROOT < /dev/null > /dev/null &
   profile:  
     path: /usr/inferno-os/lib/sh/profile
     data: |
@@ -73,5 +130,5 @@ files:
       echo 'Internal registry port '^$port
       echo 'External registry port '^$external_port
 
-      echo files.dev.metacoma.io > /dev/sysname
+      echo 'files.dev.metacoma.io' > /dev/sysname
       grid/reglisten -A -r type files 'tcp!*!'^$external_port { export /storage & }
