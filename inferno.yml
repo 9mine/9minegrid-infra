@@ -28,6 +28,7 @@ files:
     data: |
      ndb/cs
      ndb/dns
+     
      load std
      mkdir -p /mnt/keys
      echo ----- /lib/sh/profile
