@@ -46,6 +46,8 @@ env:
     value: puff.a-b.xyz
   - name: CPU_USER
     value: glenda
+  - name: GRIDFILES
+    value: tcp!files.dev.metacoma.io!30098
   - name: CPU_PASSWORD
     value: 
 
@@ -56,7 +58,7 @@ files:
       #!/bin/bash
       export USERNAME=$1
       export USER_DOMAIN=${USERNAME}.users.dev.metacoma.io
-      echo $CPU_PASSWORD | drawterm -G -h $CPU_HOST -a $CPU_HOST -u $CPU_USER -c "9fs tcp!files.dev.metacoma.io!30098 /n/gridfiles; auth/newns -n /n/gridfiles/9mine/files/9front/9mine.ns rc /n/gridfiles/9mine/files/9front/newuser.rc $USERNAME &" &
+      echo $CPU_PASSWORD | drawterm -G -h $CPU_HOST -a $CPU_HOST -u $CPU_USER -c "9fs $GRIDFILES /n/gridfiles; auth/newns -n /n/gridfiles/9mine/files/9front/9mine.ns rc /n/gridfiles/9mine/files/9front/newuser.rc $USERNAME &" &
       
   newns:
     path: /usr/inferno-os/9mine/newuser.sh
