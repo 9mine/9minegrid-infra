@@ -1,0 +1,57 @@
+replicaCount: 1
+
+image:
+  repository: dievri/inferno-os
+  pullPolicy: Always
+  tag: "focal"
+
+serviceAccount:
+  create: false
+
+securityContext: {}
+
+manualsExternalPort: &manualsExternalPort 30088
+manualsInternalPort: &manualsInternalPort 1918
+
+service:
+  - type: ClusterIP
+    port: *manualsInternalPort
+
+#nodePortRange:
+#  from: 30100
+#  to: 30200
+#  proto: tcp
+env:
+  - name: MANUALS_INTERNAL_PORT
+    value: *manualsInternalPort
+  - name: MANUALS_EXTERNAL_PORT
+    value: *manualsExternalPort
+
+initWithGit:
+  mountPath: /usr/inferno-os/export/manfs
+  URL: https://github.com/9mine/9mine-man-fs.git
+
+ingress:
+  enabled: false
+
+resources: {}
+autoscaling:
+  enabled: false
+
+files:
+  profile:
+    path: /usr/inferno-os/lib/sh/profile
+    data: |
+      load file2chan
+      load std
+      ndb/cs
+      for host_var in `{ os env } { '{'$host_var'}' }
+      EXPORT_PATH = /export/manfs
+      test -d $EXPORT_PATH || mkdir -p $EXPORT_PATH
+      port = $MANUALS_INTERNAL_PORT   
+      test -d /mnt/registry || mkdir -p /mnt/registry
+      mount -A tcp!registry.dev.metacoma.io!30100 /mnt/registry
+      echo 'manuals.dev.metacoma.io' > /dev/sysname
+      listen -A 'tcp!*!'$MANUALS_INTERNAL_PORT { export $EXPORT_PATH & } &
+      listen -A 'tcp!*!'$MANUALS_EXTERNAL_PORT { export $EXPORT_PATH & } &
+      grid/reglisten -A -r description 'manuals' 'tcp!*!'$MANUALS_EXTERNAL_PORT { export $EXPORT_PATH & } &
