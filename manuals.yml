@@ -17,6 +17,11 @@ service:
   - type: ClusterIP
     port: *manualsInternalPort
 
+nodePortRange:
+  from: *manualsExternalPort
+  to: 30089
+  proto: tcp
+
 #nodePortRange:
 #  from: 30100
 #  to: 30200
@@ -52,6 +57,4 @@ files:
       test -d /mnt/registry || mkdir -p /mnt/registry
       mount -A tcp!registry.dev.metacoma.io!30100 /mnt/registry
       echo 'manuals.dev.metacoma.io' > /dev/sysname
-      listen -A 'tcp!*!'$MANUALS_INTERNAL_PORT { export $EXPORT_PATH & } &
-      listen -A 'tcp!*!'$MANUALS_EXTERNAL_PORT { export $EXPORT_PATH & } &
       grid/reglisten -A -r description 'manuals' 'tcp!*!'$MANUALS_EXTERNAL_PORT { export $EXPORT_PATH & } &
