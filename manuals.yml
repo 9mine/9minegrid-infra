@@ -22,6 +22,8 @@ nodePortRange:
   to: 30089
   proto: tcp
 
+storage: null
+
 #nodePortRange:
 #  from: 30100
 #  to: 30200
