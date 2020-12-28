@@ -45,51 +45,43 @@ files:
   namespace_9mine_9front:
     path: /usr/inferno-os/host/storage/9mine/files/9front/9mine.ns
     data: |
-      # root
-      mount -aC #s/boot /root $rootspec                                                                                                                             
-      bind -a $rootdir /
-      
-      # kernel devices
-      bind #c /dev
-      bind #d /fd
-      bind -c #e /env
-      bind #p /proc
+      bind  /root /root
+      mount -aC '#s/boot' /root
+      bind  / /
+      bind -a /root /
+      mount -a '#s/boot' /
       bind -c #s /srv
-      bind -q #σ /shr
-      bind -a #¤ /dev
-      bind -qa #¶ /dev
-      
-      # authentication
-      mount -b /srv/factotum /mnt
-      
-      # mount points
-      mount -a /srv/slashn /n
-      mount -a /srv/slashmnt /mnt
-      mount -a /srv/mntexport /mnt/exportfs
-      
-      # standard bin
-      bind /$cputype/bin /bin
+      bind  '#c' /dev
+      bind  '#d' /fd
+      bind -c '#e' /env
+      bind  '#p' /proc
+      bind  '#σ' /shr
+      bind -a '#¤' /dev
+      bind -a '#¶' /dev
+      bind  /mnt /mnt
+      mount -b '#s/factotum' /mnt
+      bind  /n /n
+      mount -a '#s/slashn' /n
+      mount -a '#s/slashmnt' /mnt
+      bind  /mnt/exportfs /mnt/exportfs
+      mount -a '#s/mntexport' /mnt/exportfs
+      bind  /amd64/bin /bin
       bind -a /rc/bin /bin
-      
-      # internal networks
-      # mount -a /srv/ip /net
-      bind -a #l /net
-      bind -a #I /net
-      mount -a /srv/cs /net
-      mount -a /srv/dns /net
-      mount -a /srv/net /net
-      
-      mount -C /srv/boot /n/other other
-      bind -c /n/other/usr/$user/tmp /usr/$user/tmp
-      
-      bind -c /usr/$user/tmp /tmp
-      cd /usr/$user
+      bind  /net /net
+      bind -a '#l' /net
+      bind -a '#I' /net
+      mount -a '#s/cs' /net
+      mount -a '#s/dns' /net
+
+#      mount -a tcp!files.dev.metacoma.io!30098 /n/gridfiles
+#      mount -a tcp!registry.dev.metacoma.io!30100 /mnt/registry
+#      mount -a tcp!root.9gridchan.org!564 /n/gridfs/
+#      cd /usr/$user
       
   newns_9front:
     path: /usr/inferno-os/host/storage/9mine/files/9front/newuser.rc
     data: |
       #!/bin/rc
-      
       NAME=$1
       SESSION=cmdchan-$NAME
       
@@ -113,6 +105,7 @@ files:
       
       PORT=`{netstat -n | awk -v 'MIN_PORT='$MIN_PORT -v 'MAX_PORT='$MAX_PORT '/Listen/ && ($5 > MIN_PORT && $5 < MAX_PORT) { print $5 }' | sort -rn | awk -v 'MIN_PORT='$MIN_PORT 'BEGIN { port = MIN_PORT} { port = $0 + 1; exit } END { print port }'}
       
+      rm /srv/registry.dev.metacoma.io!30100 /srv/tcp!root.9gridchan.org!564
       9fs tcp!registry.dev.metacoma.io!30100 /mnt/registry
       9fs tcp!root.9gridchan.org!564 /n/gridfs/
       /n/gridfs/amd64/bin/gridlisten1 -tv 'tcp!*!'$PORT exportfs -r / &
