@@ -47,9 +47,9 @@ env:
   - name: CPU_USER
     value: glenda
   - name: GRIDFILES
-    value: tcp!files.dev.metacoma.io!30098
+    value: tcp!files.demo.metacoma.io!30098
   - name: CPU_PASSWORD
-    value: 
+    value: supersecureX
 
 files: 
   newns_9front:
@@ -57,7 +57,7 @@ files:
     data: | 
       #!/bin/bash
       export USERNAME=$1
-      export USER_DOMAIN=${USERNAME}.users.dev.metacoma.io
+      export USER_DOMAIN=${USERNAME}.users.demo.metacoma.io
       echo $CPU_PASSWORD | drawterm -G -h $CPU_HOST -a $CPU_HOST -u $CPU_USER -c "9fs $GRIDFILES /n/gridfiles; auth/newns -n /n/gridfiles/9mine/files/9front/9mine.ns rc /n/gridfiles/9mine/files/9front/newuser.rc $USERNAME &" &
       
   newns:
@@ -68,7 +68,7 @@ files:
       
       export USERNAME=$1
       export USER_ROOT=/9mine/${USERNAME}
-      export USER_DOMAIN=${USERNAME}.users.dev.metacoma.io
+      export USER_DOMAIN=${USERNAME}.users.demo.metacoma.io
       export INFERNO_ROOT="/usr/inferno-os"
       #export INFERNO_ROOT="/home/bebebeko/inferno-os"
       
@@ -88,7 +88,7 @@ files:
       load file2chan
       load std
       mkdir -p /mnt/registry
-      mount -A tcp!registry.dev.metacoma.io!30100 /mnt/registry
+      mount -A tcp!registry.demo.metacoma.io!30100 /mnt/registry
       #for host_var in `{ os env | sed 's/=/=''/;s/$/''/' } { '{'$host_var'}' }
       for host_var in `{ os env }  { '{'$host_var'}' }
 
@@ -112,7 +112,7 @@ files:
             sh -n -c ${rget data} >$output_file >>[2]$output_file
           }
       
-      echo $USERNAME^'.users.dev.metacoma.io' > /dev/sysname
+      echo $USERNAME^'.users.demo.metacoma.io' > /dev/sysname
       echo ok
       grid/reglisten -A -r user $USERNAME 'tcp!*!'^$PORT { export / & }
       EOF
@@ -163,11 +163,10 @@ files:
               rread ''
             }
           } {
-            os cat /usr/inferno-os/9mine/newuser_9front.sh ${rget data} >$output_file >>[2]$output_file
+            os /bin/sh /usr/inferno-os/9mine/newuser_9front.sh test3334 >$output_file >>[2]$output_file
             #os /bin/sh /usr/inferno-os/9mine/newuser_9front.sh ${rget data} >$output_file >>[2]$output_file
-        	}
         	}
 
       # https://github.com/9mine/inferno-os/blob/129109066c4092c617ce34229ba5ef91cbc19961/appl/grid/reglisten.b#L163
-      echo 'user.dev.metacoma.io' > /dev/sysname
+      echo 'user.demo.metacoma.io' > /dev/sysname
       grid/reglisten -A -r description 'user management' 'tcp!*!'^$port { export $CMD_CHAN_DIR & }
