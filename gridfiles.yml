@@ -108,6 +108,7 @@ files:
       rm /srv/registry.demo.metacoma.io!30100 /srv/tcp!root.9gridchan.org!564
       9fs tcp!registry.demo.metacoma.io!30100 /mnt/registry
       9fs tcp!root.9gridchan.org!564 /n/gridfs/
+      myip="9front.demo.metacoma.io"
       /n/gridfs/amd64/bin/gridlisten1 -tv 'tcp!*!'$PORT exportfs -r / &
     
   profile:  
