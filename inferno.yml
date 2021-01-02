@@ -37,7 +37,6 @@ files:
      output_file := /tmp/output_file
      test -d /tmp || mkdir -p /tmp
      test -d /tmp/file2chan || mkdir -p /tmp/file2chan
-     test -d /tmp/users || mkdir -p /tmp/users            
      file2chan /tmp/file2chan/cmd {
          if {~ ${rget offset} 0} {
            cat $output_file | putrdata
