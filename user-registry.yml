@@ -97,9 +97,9 @@ files:
       mount -A $gridfiles /9mine
 
       
-      CMD_CHAN_DIR = /tmp/file2chan
+      CMD_CHAN_DIR = /n/cmdchan/chan
       test -d $CMD_CHAN_DIR || mkdir -p $CMD_CHAN_DIR
-      output_file := /tmp/output_file
+      output_file := /n/cmdchan/tmp_output_file
       # add cmdchan
       file2chan $CMD_CHAN_DIR^/cmd {
             if {~ ${rget offset} 0} {
