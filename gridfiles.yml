@@ -85,15 +85,20 @@ files:
       NAME=$1
       SESSION=cmdchan-$NAME
       
-      CMDCHAN_ROOT = /tmp/file2chan/
-      CMDCHAN_IN = $CMDCHAN_ROOT/cmd
-      
+      CMDCHAN_ROOT = /n/cmdchan/
+     
       
       cd /usr/glenda/mq
       ./mq -s $SESSION
       mount -c /srv/$SESSION /n/$SESSION
       
-      mkdir -p $CMDCHAN_ROOT /n/$SESSION/rc
+      rm -rf $CMDCHAN_ROOT
+      ramfs -m $CMDCHAN_ROOT
+      mkdir -p $CMDCHAN_ROOT/chan
+
+      CMDCHAN_IN = $CMDCHAN_ROOT/chan/cmd
+
+      mkdir -p /n/$SESSION/rc
       touch /n/$SESSION/rc/fd0 $CMDCHAN_IN
       
       rc -i < /n/$SESSION/rc/fd0 &
@@ -109,7 +114,7 @@ files:
       9fs tcp!registry.demo.metacoma.io!30100 /mnt/registry
       9fs tcp!root.9gridchan.org!564 /n/gridfs/
       myip=9front.demo.metacoma.io
-      /n/gridfs/amd64/bin/gridlisten1 -tv 'tcp!*!'$PORT exportfs -r / &
+      /n/gridfs/amd64/bin/gridlisten1 -d $NAME -tv 'tcp!*!'$PORT exportfs -r / &
     
   profile:  
     path: /usr/inferno-os/lib/sh/profile
