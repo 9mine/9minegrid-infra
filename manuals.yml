@@ -55,8 +55,7 @@ files:
       for host_var in `{ os env } { '{'$host_var'}' }
       EXPORT_PATH = /export/manfs
       test -d $EXPORT_PATH || mkdir -p $EXPORT_PATH
-      port = $MANUALS_INTERNAL_PORT   
       test -d /mnt/registry || mkdir -p /mnt/registry
-      mount -A tcp!registry.dev.metacoma.io!30100 /mnt/registry
-      echo 'manuals.dev.metacoma.io' > /dev/sysname
+      mount -A tcp!registry.demo.metacoma.io!30099 /mnt/registry
+      echo 'manuals.demo.metacoma.io' > /dev/sysname
       grid/reglisten -A -r description 'manuals' 'tcp!*!'$MANUALS_EXTERNAL_PORT { export $EXPORT_PATH & } &
