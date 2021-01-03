@@ -43,13 +43,13 @@ env:
   - name: NINE_MINE_USER_FS_EXTERNAL_PORT
     value: *userFsExternalPort
   - name: CPU_HOST
-    value: puff.a-b.xyz
+    value: 9front.demo.metacoma.io
   - name: CPU_USER
     value: glenda
   - name: GRIDFILES
     value: tcp!files.demo.metacoma.io!30098
   - name: CPU_PASSWORD
-    value: supersecureX
+    value: supersecureXX
 
 files: 
   newns_9front:
@@ -58,7 +58,7 @@ files:
       #!/bin/bash
       export USERNAME=$1
       export USER_DOMAIN=${USERNAME}.users.demo.metacoma.io
-      echo $CPU_PASSWORD | drawterm -G -h $CPU_HOST -a $CPU_HOST -u $CPU_USER -c "9fs $GRIDFILES /n/gridfiles; auth/newns -n /n/gridfiles/9mine/files/9front/9mine.ns rc /n/gridfiles/9mine/files/9front/newuser.rc $USERNAME &" &
+      echo $CPU_PASSWORD | drawterm -G -h $CPU_HOST -a $CPU_HOST -u $CPU_USER -c "rm /srv/$GRIDFILES; 9fs $GRIDFILES /n/gridfiles; auth/newns -n /n/gridfiles/9mine/files/9front/9mine.ns rc -c 'echo rc start; rm /srv/$GRIDFILES; 9fs $GRIDFILES /n/gridfiles; . /n/gridfiles/9mine/files/9front/newuser.rc $USERNAME; echo rc-end'" &
       
   newns:
     path: /usr/inferno-os/9mine/newuser.sh
@@ -151,7 +151,7 @@ files:
               rread ''
             }
           } {
-            os /bin/sh /usr/inferno-os/9mine/newuser.sh ${rget data} >$output_file >>[2]$output_file
+            os /bin/sh /usr/inferno-os/9mine/newuser.sh ${rget data} >$output_file >>[2]$output_file 
         	}
 
       output_file := /tmp/output_9front_file
@@ -163,8 +163,7 @@ files:
               rread ''
             }
           } {
-            os /bin/sh /usr/inferno-os/9mine/newuser_9front.sh test3334 >$output_file >>[2]$output_file
-            #os /bin/sh /usr/inferno-os/9mine/newuser_9front.sh ${rget data} >$output_file >>[2]$output_file
+            os /bin/sh /usr/inferno-os/9mine/newuser_9front.sh ${rget data} >$output_file >>[2]$output_file &
         	}
 
       # https://github.com/9mine/inferno-os/blob/129109066c4092c617ce34229ba5ef91cbc19961/appl/grid/reglisten.b#L163
