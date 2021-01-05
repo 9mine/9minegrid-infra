@@ -108,7 +108,7 @@ files:
       MIN_PORT=40000
       MAX_PORT=50000
       
-      PORT=`{netstat -n | awk -v 'MIN_PORT='$MIN_PORT -v 'MAX_PORT='$MAX_PORT '/Listen/ && ($5 > MIN_PORT && $5 < MAX_PORT) { print $5 }' | sort -rn | awk -v 'MIN_PORT='$MIN_PORT 'BEGIN { port = MIN_PORT} { port = $0 + 1; exit } END { print port }'}
+      PORT=`{netstat -n | awk -v 'MIN_PORT='$MIN_PORT -v 'MAX_PORT='$MAX_PORT '/Listen/ && ($5 >= MIN_PORT && $5 <= MAX_PORT) { print $5 }' | sort -rn | awk -v 'MIN_PORT='$MIN_PORT 'BEGIN { port = MIN_PORT} { port = $0 + 1; exit } END { print port }'}
       
       rm /srv/registry.demo.metacoma.io!30100 /srv/tcp!root.9gridchan.org!564
       9fs tcp!registry.demo.metacoma.io!30100 /mnt/registry
