@@ -30,5 +30,5 @@ configuration:
       port: 30000
       default_game: devtest
       motd: Welcome to 9mine. Enjoy your stay!
-      max_users: 15
+      max_users: 42
       default_privs: interact, shout, give, teleport, bring, fast, fly, noclip, settime, privs, basic_privs, ban, rollback, server
