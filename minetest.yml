@@ -1,0 +1,34 @@
+image:
+  repository: 9mine/minetest
+  pullPolicy: Always
+  tag: "master"
+
+service:
+  type: NodePort
+  port: 30000
+  nodePort: 30000
+
+env:
+  - name: INFERNO_ADDR
+    value: tcp!inferno!2002
+  - name: USER_REGISTRY_ADDR
+    value: tcp!user-registry.demo.metacoma.io!30100
+  - name: REGISTRY_ADDR
+    value: tcp!registry.demo.metacoma.io!30099
+  - name: GRIDFILES_ADDR
+    value: tcp!gridfiles.demo.metacoma.io!30098
+  - name: MANUALS_ADDR
+    value: tcp!manuals.demo.metacoma.io!30088
+
+configuration: 
+      server_name: 9mine
+      server_description: 9mine Prof of Concept
+      server_address: node1.dev.metacoma.io
+      server_url: https://github.com/9mine/9mine
+      server_announce: true
+      serverlist_url: servers.minetest.net
+      port: 30000
+      default_game: devtest
+      motd: Welcome to 9mine. Enjoy your stay!
+      max_users: 15
+      default_privs: interact, shout, give, teleport, bring, fast, fly, noclip, settime, privs, basic_privs, ban, rollback, server
