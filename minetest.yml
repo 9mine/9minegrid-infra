@@ -32,3 +32,11 @@ configuration:
   motd: Welcome to 9mine. Enjoy your stay!
   max_users: 42
   default_privs: interact, shout, give, teleport, bring, fast, fly, noclip, settime, privs, basic_privs, ban, rollback, server
+
+  # https://github.com/minetest/minetest/blob/5.3.0/minetest.conf.example#L1029
+  # active_block_range: 16                    # default 3
+  # active_object_send_range_blocks: 24       # default 10
+  # max_block_send_distance: 42               # default 16
+  # block_send_optimize_distance: 12          # default 4
+  # client_unload_unused_data_timeout: 3600   # default 600 
+  # client_mapblock_limit: 12000              # default 5000
