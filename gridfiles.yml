@@ -73,8 +73,8 @@ files:
       mount -a '#s/cs' /net
       mount -a '#s/dns' /net
 
-#      mount -a tcp!files.dev.metacoma.io!30098 /n/gridfiles
-#      mount -a tcp!registry.dev.metacoma.io!30100 /mnt/registry
+#      mount -a tcp!files.demo.metacoma.io!30098 /n/gridfiles
+#      mount -a tcp!registry.demo.metacoma.io!30100 /mnt/registry
 #      mount -a tcp!root.9gridchan.org!564 /n/gridfs/
 #      cd /usr/$user
       
@@ -85,15 +85,20 @@ files:
       NAME=$1
       SESSION=cmdchan-$NAME
       
-      CMDCHAN_ROOT = /tmp/file2chan/
-      CMDCHAN_IN = $CMDCHAN_ROOT/cmd
-      
+      CMDCHAN_ROOT = /n/cmdchan/
+     
       
       cd /usr/glenda/mq
       ./mq -s $SESSION
       mount -c /srv/$SESSION /n/$SESSION
       
-      mkdir -p $CMDCHAN_ROOT /n/$SESSION/rc
+      rm -rf $CMDCHAN_ROOT
+      ramfs -m $CMDCHAN_ROOT
+      mkdir -p $CMDCHAN_ROOT/chan
+
+      CMDCHAN_IN = $CMDCHAN_ROOT/chan/cmd
+
+      mkdir -p /n/$SESSION/rc
       touch /n/$SESSION/rc/fd0 $CMDCHAN_IN
       
       rc -i < /n/$SESSION/rc/fd0 &
@@ -103,12 +108,13 @@ files:
       MIN_PORT=40000
       MAX_PORT=50000
       
-      PORT=`{netstat -n | awk -v 'MIN_PORT='$MIN_PORT -v 'MAX_PORT='$MAX_PORT '/Listen/ && ($5 > MIN_PORT && $5 < MAX_PORT) { print $5 }' | sort -rn | awk -v 'MIN_PORT='$MIN_PORT 'BEGIN { port = MIN_PORT} { port = $0 + 1; exit } END { print port }'}
+      PORT=`{netstat -n | awk -v 'MIN_PORT='$MIN_PORT -v 'MAX_PORT='$MAX_PORT '/Listen/ && ($5 >= MIN_PORT && $5 <= MAX_PORT) { print $5 }' | sort -rn | awk -v 'MIN_PORT='$MIN_PORT 'BEGIN { port = MIN_PORT} { port = $0 + 1; exit } END { print port }'}
       
-      rm /srv/registry.dev.metacoma.io!30100 /srv/tcp!root.9gridchan.org!564
-      9fs tcp!registry.dev.metacoma.io!30100 /mnt/registry
+      rm /srv/registry.demo.metacoma.io!30100 /srv/tcp!root.9gridchan.org!564
+      9fs tcp!registry.demo.metacoma.io!30100 /mnt/registry
       9fs tcp!root.9gridchan.org!564 /n/gridfs/
-      /n/gridfs/amd64/bin/gridlisten1 -tv 'tcp!*!'$PORT exportfs -r / &
+      myip=9front.demo.metacoma.io
+      /n/gridfs/amd64/bin/gridlisten1 -d $NAME -tv 'tcp!*!'$PORT exportfs -r / &
     
   profile:  
     path: /usr/inferno-os/lib/sh/profile
@@ -134,12 +140,12 @@ files:
 
 
       test -d /mnt/registry || mkdir -p /mnt/registry
-      mount -A tcp!registry.dev.metacoma.io!30100 /mnt/registry
+      mount -A tcp!registry.demo.metacoma.io!30100 /mnt/registry
 
       port = $INTERNAL_PORT
       external_port = $EXTERNAL_PORT
       echo 'Internal registry port '^$port
       echo 'External registry port '^$external_port
 
-      echo 'files.dev.metacoma.io' > /dev/sysname
+      echo 'files.demo.metacoma.io' > /dev/sysname
       grid/reglisten -A -r type files 'tcp!*!'^$external_port { export /storage & }

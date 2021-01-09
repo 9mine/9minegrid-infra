@@ -18,30 +18,32 @@ files:
   profile:  
     path: /usr/inferno-os/lib/sh/profile
     data: |
-      echo ----- /lib/sh/profile
-      ndb/cs
-      ndb/dns
-      load std
-      load file2chan 
-      for host_var in `{ os env } { '{'$host_var'}' }
-      CMD_CHAN_DIR = /n/cmdchan/chan
-      test -d /tmp || mkdir -p /tmp
-      test -d $CMD_CHAN_DIR || mkdir -p $CMD_CHAN_DIR
-      dir = /
-      port = 2001
+     ndb/cs
+     ndb/dns
+     
+     load std
+     mkdir -p /mnt/keys
+     echo ----- /lib/sh/profile
+     load std
+     load file2chan 
 
-      output_file := /n/cmdchan/tmp_output_file
-      file2chan $CMD_CHAN_DIR^/cmd {
-        if {~ ${rget offset} 0} {
-              cat $output_file | putrdata
-            } {
-              rread ''
-            }
-        } {
-            sh -n -c ${rget data} >$output_file >>[2]$output_file
-      }
+     CMD_CHAN_DIR = /n/cmdchan/chan
+     test -d $CMD_CHAN_DIR || mkdir -p $CMD_CHAN_DIR
+     output_file := /n/cmdchan/output_file
 
-      mkdir -p /mnt/registry
-      mount -A tcp!registry!registry /mnt/registry
-      listen -A 'tcp!*!'^$port { export $dir & } &
-      echo --- finish loading profile
+     file2chan $CMD_CHAN_DIR^/cmd {
+           if {~ ${rget offset} 0} {
+             cat $output_file | putrdata
+             rm $output_file
+           } {
+             rread ''
+           }
+         } {
+           sh -n -c ${rget data} >$output_file >>[2]$output_file
+         }
+
+     mkdir -p /n/client   
+     mkdir -p /mnt/registry
+     mount -A tcp!registry!registry /mnt/registry
+     listen -A 'tcp!*!2002' { export / & }
+     echo --- finish loading profile
