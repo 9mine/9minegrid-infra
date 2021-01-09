@@ -1,26 +1,18 @@
 replicaCount: 1
 
 image:
-  repository: dievri/inferno-os
+  repository: 9mine/inferno-os
   pullPolicy: Always
   tag: "focal"
-
-serviceAccount:
-  create: false
 
 securityContext: {}
 
 service:
   - type: ClusterIP
-    port: 2002
-
-
-ingress:
-  enabled: false
+    port: 2001
 
 resources: {}
-autoscaling:
-  enabled: false
+storage: null 
 
 files: 
   profile:  
@@ -55,4 +47,3 @@ files:
      mount -A tcp!registry!registry /mnt/registry
      listen -A 'tcp!*!2002' { export / & }
      echo --- finish loading profile
-
