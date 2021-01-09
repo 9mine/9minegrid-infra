@@ -3,7 +3,7 @@ User registry
 ---
 
 Install:
-```
+```bash
 $ helm repo add 9mine https://9mine.github.io/charts
 $ helm repo update
 # install global registry
