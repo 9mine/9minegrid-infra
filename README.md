@@ -15,5 +15,5 @@ $ helm upgrade --install gridfiles 9mine/inferno --version 0.4.2 -f ./gridfiles.
 # install manuals
 $ helm upgrade --install manuals 9mine/inferno --version 0.4.3 -f ./manuals.yml
 # install minetest server with 9mine mod
-$ helm upgrade --install manuals 9mine/minetest --version 0.4.3 -f ./manuals.yml
+$ helm upgrade --install minetest 9mine/minetest --version 0.2.1 -f ./minetest.yml
 ```
