@@ -21,14 +21,14 @@ env:
     value: tcp!manuals.demo.metacoma.io!30088
 
 configuration: 
-      server_name: 9mine
-      server_description: 9mine Prof of Concept
-      server_address: demo.metacoma.io
-      server_url: https://github.com/9mine/9mine
-      server_announce: true
-      serverlist_url: servers.minetest.net
-      port: 30000
-      default_game: devtest
-      motd: Welcome to 9mine. Enjoy your stay!
-      max_users: 42
-      default_privs: interact, shout, give, teleport, bring, fast, fly, noclip, settime, privs, basic_privs, ban, rollback, server
+  server_name: 9mine
+  server_description: 9mine Prof of Concept
+  server_address: demo.metacoma.io
+  server_url: https://github.com/9mine/9mine
+  server_announce: true
+  serverlist_url: servers.minetest.net
+  port: 30000
+  default_game: devtest
+  motd: Welcome to 9mine. Enjoy your stay!
+  max_users: 42
+  default_privs: interact, shout, give, teleport, bring, fast, fly, noclip, settime, privs, basic_privs, ban, rollback, server
