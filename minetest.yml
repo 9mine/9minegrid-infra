@@ -1,7 +1,7 @@
 image:
   repository: 9mine/minetest
   pullPolicy: Always
-  tag: "master"
+  tag: "demo"
 
 service:
   type: NodePort
