@@ -1,5 +1,5 @@
 ---
-User registry
+9minegrid deployment
 ---
 
 Install:
