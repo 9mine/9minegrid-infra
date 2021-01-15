@@ -64,6 +64,12 @@ files:
         contact='mycroftiv'
         description='9gridchan public registry'
         icon='https://camo.githubusercontent.com/3f0e8eeb989a431168db50524198fddd4b31c25dbc88f8a3d66090bd0b6096b4/68747470733a2f2f7777772e646f636b65722e636f6d2f73697465732f64656661756c742f66696c65732f6f79737465722d72656769737472792d332e706e67'
+
+      service=tcp!grid.a-b.xyz!9990
+        type=fileserver
+        contact='kvik'
+        description='EMERGENCY 9P CHAT'
+        icon='https://i.pinimg.com/originals/bb/83/7d/bb837d5fa2173648d842fcc606f378a5.jpg'
         
       service='tcp!docs.a-b.xyz!909'
         type=fileserver
