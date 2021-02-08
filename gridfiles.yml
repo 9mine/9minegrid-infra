@@ -298,3 +298,4 @@ files:
             end
         end
         register.add_form_handler("core:global_registry", global_registry)
+        RegistryTool.on_use()
